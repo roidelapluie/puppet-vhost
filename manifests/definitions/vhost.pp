@@ -3,7 +3,7 @@ define vhost (
 	$ip = "*",
 	$port = "80",
 	$serveradmin = "root@localhost",
-	$servername = 'localhost',
+	$servername = "localhost",
 	$documentroot = "$vhosts::root/$servername/htdocs",
 	$createroot = 'yes',
 	$serveralias,
@@ -18,7 +18,10 @@ define vhost (
 	$apachegroup = $::operatingsystem ? {
 		default => 'apache',
 		/debian|ubuntu/ => 'root',
-	}
+	},
+	$webdav = '',
+	$webdav_user = 'webdav',
+	$webdav_pass = 'webdav'
 ) {
 #	create logdir/logs
 	file {
@@ -88,6 +91,24 @@ define vhost (
 				present => 'link',
 				absent => 'absent',
 			};
+		}
+	}
+
+#	webdav stuff
+	if $webdav {
+		file {
+			"$documentroot/.htpasswd":
+				ensure => "$ensure",
+				owner => "$apacheuser",
+				group => "$apachegroup";
+		}
+
+		exec {
+			"htpasswd_$servername":
+				command => "htpasswd -mb $documentroot/.htpasswd $webdav_user $webdav_pass", 
+				path => '/bin:/sbin:/usr/bin:/usr/sbin/',
+				unless => "grep $webdav_pass $documentroot/.htpasswd",
+				require => File["$documentroot/.htpasswd"];
 		}
 	}
 }

@@ -25,6 +25,16 @@
         ErrorLog <%= baselogdir %>/<%= servername %>/error.log
         ServerSignature On
 
+<% if has_variable?('webdav') -%>
+		Alias /webdav <%= documentroot %>
+		<Location /webdav>
+			DAV On
+			AuthType Basic
+			AuthName "Webdav"
+			AuthUserFile <%= documentroot %>/.htpasswd
+			Require valid-user
+		</Location>
+<% end -%>
 
 </VirtualHost>
 
