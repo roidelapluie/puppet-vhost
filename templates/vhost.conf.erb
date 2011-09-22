@@ -4,19 +4,19 @@
         ServerName <%= servername %> 
 
 <% serveralias.each do |serveralias|  -%>
-	ServerAlias <%= serveralias  %>
+        ServerAlias <%= serveralias  %>
 <% end -%>
 
         DocumentRoot <%= documentroot %>
-	<Directory <%= documentroot %> >
+        <Directory <%= documentroot %> >
 
-		Options FollowSymLinks MultiViews
+                Options FollowSymLinks MultiViews
                 AllowOverride All
                 Order allow,deny
                 allow from all
 
+        </Directory>
 
-	</Directory>
         # Possible values include: debug, info, notice, warn, error, crit,
         # alert, emerg.
         LogLevel warn
@@ -25,16 +25,61 @@
         ErrorLog <%= baselogdir %>/<%= servername %>/error.log
         ServerSignature On
 
-<% if has_variable?('webdav') -%>
-		Alias /webdav <%= documentroot %>
-		<Location /webdav>
-			DAV On
-			AuthType Basic
-			AuthName "Webdav"
-			AuthUserFile <%= documentroot %>/.htpasswd
-			Require valid-user
-		</Location>
+<% if webdav == 'yes' -%>
+        Alias /webdav <%= documentroot %>
+        <Location /webdav>
+            DAV On
+            AuthType Basic
+            AuthName "Webdav"
+            AuthUserFile <%= documentroot %>/.htpasswd
+            Require valid-user
+        </Location>
 <% end -%>
 
 </VirtualHost>
 
+<% if ssl == 'on' %>
+<VirtualHost <%= ip %>:<%= sslport %>>
+
+        ServerAdmin <%= serveradmin %>
+        ServerName <%= servername %> 
+
+<% serveralias.each do |serveralias|  -%>
+        ServerAlias <%= serveralias  %>
+<% end -%>
+
+        DocumentRoot <%= documentroot %>
+        <Directory <%= documentroot %> >
+
+                Options FollowSymLinks MultiViews
+                AllowOverride All
+                Order allow,deny
+                allow from all
+
+        </Directory>
+
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+
+        CustomLog <%= baselogdir %>/<%= servername %>/access.log combined
+        ErrorLog <%= baselogdir %>/<%= servername %>/error.log
+        ServerSignature On
+
+<% if webdav == 'yes' -%>
+        Alias /webdav <%= documentroot %>
+        <Location /webdav>
+            DAV On
+            AuthType Basic
+            AuthName "Webdav"
+            AuthUserFile <%= documentroot %>/.htpasswd
+            Require valid-user
+        </Location>
+<% end -%>
+
+        SSLEngine On
+        SSLCertificateFile <%= ssl_certfile %>
+        SSLCertificateKeyFile <%= ssl_keyfile %>
+
+</VirtualHost>
+<% end -%>

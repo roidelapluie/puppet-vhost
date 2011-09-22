@@ -21,8 +21,17 @@ define vhost (
 	},
 	$webdav = '',
 	$webdav_user = 'webdav',
-	$webdav_pass = 'webdav'
+	$webdav_pass = 'webdav',
+	$ssl = 'off',
+	$sslport = '443',
+	$ssl_certfile = '/etc/pki/tls/certs/ca.crt',
+	$ssl_keyfile = '/etc/pki/tls/private/ca.key'
 ) {
+#	define default path for exec resources
+	Exec {
+		path => '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin'
+	}
+
 #	create logdir/logs
 	file {
 		"$baselogdir/$servername/":
@@ -106,9 +115,36 @@ define vhost (
 		exec {
 			"htpasswd_$servername":
 				command => "htpasswd -mb $documentroot/.htpasswd $webdav_user $webdav_pass", 
-				path => '/bin:/sbin:/usr/bin:/usr/sbin/',
 				unless => "grep $webdav_pass $documentroot/.htpasswd",
 				require => File["$documentroot/.htpasswd"];
+		}
+	}
+
+#	ssl stuff
+	if $ssl {
+		file {
+			"cert_answers":
+				path => '/etc/pki/tls/private/cert_answers',
+				content => template('vhost/cert_answers.erb');
+		}
+
+		exec {
+			'gen_ssl_cert':
+				command => "openssl genrsa -out $ssl_keyfile 1024",
+				unless => "test -f $ssl_keyfile";
+
+			'create_cert_request':
+				command => "openssl req -new -key $ssl_keyfile -out ca.csr<cert_answers",
+#				cwd => "`dirname $ssl_certfile`",
+				cwd => '/etc/pki/tls/private',
+				unless => "test -f `dirname $ssl_certfile`/ca.csr",
+				require => [ Exec['gen_ssl_cert'], File['cert_answers']  ];
+
+			'sign_cert':
+				command => "openssl x509 -req -days 3650 -in ca.csr -signkey $ssl_keyfile -out $ssl_certfile",
+				cwd => '/etc/pki/tls/private',
+				unless => "test -f $ssl_certfile",
+				require => Exec['create_cert_request'];
 		}
 	}
 }
