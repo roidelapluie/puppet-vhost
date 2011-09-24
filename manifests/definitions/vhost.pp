@@ -13,10 +13,12 @@ define vhost (
 	},
 	$apacheuser = $::operatingsystem ? {
 		default => 'apache',
+		archlinux => 'http',
 		/debian|ubuntu/ => 'root',
 	},
 	$apachegroup = $::operatingsystem ? {
 		default => 'apache',
+		archlinux => 'http',
 		/debian|ubuntu/ => 'root',
 	},
 	$webdav = '',
@@ -83,8 +85,8 @@ define vhost (
 		"/etc/httpd/conf.d/$servername.conf":
 			ensure => $ensure,
 			name => $::operatingsystem ? {
+				default => "/etc/httpd/conf.d/$servername.conf",
 				/debian|ubuntu/ => "/etc/apache2/sites-available/$servername.conf",
-				/CentOS|fedora/ => "/etc/httpd/conf.d/$servername.conf",
 			},
 			mode    => 0644,
 #			notify => Service["httpd"],
