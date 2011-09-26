@@ -27,7 +27,11 @@ define vhost (
 	$ssl = 'off',
 	$sslport = '443',
 	$ssl_certfile = '/etc/pki/tls/certs/ca.crt',
-	$ssl_keyfile = '/etc/pki/tls/private/ca.key'
+	$ssl_keyfile = '/etc/pki/tls/private/ca.key',
+	$proxy = 'no',
+	$proxypath = '/',
+	$proxytarget = nil,
+	$proxyrequests = 'off'
 ) {
 #	define default path for exec resources
 	Exec {
@@ -125,28 +129,28 @@ define vhost (
 #	ssl stuff
 	if $ssl {
 		file {
-			"cert_answers":
-				path => '/etc/pki/tls/private/cert_answers',
+			"cert_answers_$name":
+				path => "/etc/pki/tls/private/cert_answers_$name",
 				content => template('vhost/cert_answers.erb');
 		}
 
 		exec {
-			'gen_ssl_cert':
+			"gen_ssl_cert_$name":
 				command => "openssl genrsa -out $ssl_keyfile 1024",
 				unless => "test -f $ssl_keyfile";
 
-			'create_cert_request':
-				command => "openssl req -new -key $ssl_keyfile -out ca.csr<cert_answers",
+			"create_cert_request_$name":
+				command => "openssl req -new -key $ssl_keyfile -out ca.csr<cert_answers_$name",
 #				cwd => "`dirname $ssl_certfile`",
 				cwd => '/etc/pki/tls/private',
 				unless => "test -f `dirname $ssl_certfile`/ca.csr",
-				require => [ Exec['gen_ssl_cert'], File['cert_answers']  ];
+				require => [ Exec["gen_ssl_cert_$name"], File["cert_answers_$name"]  ];
 
-			'sign_cert':
+			"sign_cert_$name":
 				command => "openssl x509 -req -days 3650 -in ca.csr -signkey $ssl_keyfile -out $ssl_certfile",
 				cwd => '/etc/pki/tls/private',
 				unless => "test -f $ssl_certfile",
-				require => Exec['create_cert_request'];
+				require => Exec["create_cert_request_$name"];
 		}
 	}
 }

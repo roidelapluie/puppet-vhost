@@ -7,6 +7,7 @@
         ServerAlias <%= serveralias  %>
 <% end -%>
 
+<% if proxy != 'yes' -%>
         DocumentRoot <%= documentroot %>
         <Directory <%= documentroot %> >
 
@@ -16,6 +17,11 @@
                 allow from all
 
         </Directory>
+<% else -%>
+        ProxyRequests <%= proxyrequests %>
+		ProxyPass <%= proxypath %> <%= proxytarget %>
+		ProxyPassReverse <%= proxypath %> <%= proxytarget %> 
+<% end -%>
 
         # Possible values include: debug, info, notice, warn, error, crit,
         # alert, emerg.
@@ -48,6 +54,7 @@
         ServerAlias <%= serveralias  %>
 <% end -%>
 
+<% if proxy != 'yes' -%>
         DocumentRoot <%= documentroot %>
         <Directory <%= documentroot %> >
 
@@ -57,6 +64,11 @@
                 allow from all
 
         </Directory>
+<% else -%>
+        ProxyRequests <%= proxyrequests %>
+		ProxyPass <%= proxypath %> <%= proxytarget %>
+		ProxyPassReverse <%= proxypath %> <%= proxytarget %> 
+<% end -%>
 
         # Possible values include: debug, info, notice, warn, error, crit,
         # alert, emerg.
