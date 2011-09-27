@@ -94,7 +94,7 @@ define vhost (
 			},
 			mode    => 0644,
 #			notify => Service["httpd"],
-			content => template("vhost/vhost.conf.erb");
+			content => template("vhosts/vhost.conf.erb");
 	}
 			
 #	if on debian based systems link config
@@ -131,7 +131,7 @@ define vhost (
 		file {
 			"cert_answers_$name":
 				path => "/etc/pki/tls/private/cert_answers_$name",
-				content => template('vhost/cert_answers.erb');
+				content => template('vhosts/cert_answers.erb');
 		}
 
 		exec {
