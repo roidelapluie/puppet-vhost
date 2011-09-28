@@ -22,6 +22,7 @@ define vhost (
 		/debian|ubuntu/ => 'root',
 	},
 	$webdav = '',
+	$webdav_auth = 'yes',
 	$webdav_user = 'webdav',
 	$webdav_pass = 'webdav',
 	$ssl = 'off',
