@@ -97,7 +97,7 @@
 		<% if allow_users == 'all' -%>
             Require valid-user
 		<% else -%>
-			Require user <% allow_users.each do user -%> user <% end -%>
+			Require user <% allow_users.each do |user| -%> user <% end -%>
 		<% end -%>
     <% end -%>
         </Location>
