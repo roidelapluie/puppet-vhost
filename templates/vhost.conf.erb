@@ -19,8 +19,8 @@
         </Directory>
 <% else -%>
         ProxyRequests <%= proxyrequests %>
-        ProxyPass <%= proxypath %> <%= proxytarget %>
-        ProxyPassReverse <%= proxypath %> <%= proxytarget %> 
+        ProxyPass <%= proxypath %> http://<%= proxytarget %>/
+        ProxyPassReverse <%= proxypath %> http://<%= proxytarget %>/ 
 <% end -%>
 
         # Possible values include: debug, info, notice, warn, error, crit,
@@ -67,8 +67,8 @@
         </Directory>
 <% else -%>
         ProxyRequests <%= proxyrequests %>
-        ProxyPass <%= proxypath %> <%= proxytarget %>
-        ProxyPassReverse <%= proxypath %> <%= proxytarget %> 
+        ProxyPass <%= proxypath %> https://<%= proxytarget %>/
+        ProxyPassReverse <%= proxypath %> https://<%= proxytarget %>/
 <% end -%>
 
         # Possible values include: debug, info, notice, warn, error, crit,
