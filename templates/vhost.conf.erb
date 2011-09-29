@@ -95,5 +95,9 @@
         SSLCertificateFile <%= ssl_certfile %>
         SSLCertificateKeyFile <%= ssl_keyfile %>
 
+<% if proxy == 'yes' -%>
+        SSLProxyEngine On
+<% end -%>
+
 </VirtualHost>
 <% end -%>
