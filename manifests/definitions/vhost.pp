@@ -32,7 +32,11 @@ define vhost (
 	$proxy = 'no',
 	$proxypath = '/',
 	$proxytarget = nil,
-	$proxyrequests = 'off'
+	$proxyrequests = 'off',
+	$ldap = 'no',
+	$ldap_url = '',
+	$ldap_dn = '',
+	$ldap_pass = ''
 ) {
 #	define default path for exec resources
 	Exec {
