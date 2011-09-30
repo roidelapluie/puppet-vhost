@@ -21,7 +21,7 @@
 <% else -%>
         ProxyRequests <%= proxyrequests %>
         ProxyPass <%= proxypath %> http://<%= proxytarget %>/
-        ProxyPassReverse <%= proxypath %> http://<%= proxytarget %>/ 
+        ProxyPassReverse <%= proxypath %> http://<%= proxytarget %>/
 <% end -%>
 
         # Possible values include: debug, info, notice, warn, error, crit,
@@ -35,19 +35,32 @@
 <% if webdav == 'yes' -%>
         <Location />
             DAV On
-    <% if webdav_auth == 'yes' -%>
+<% if webdav_auth == 'yes' -%>
             AuthType Basic
             AuthName "Webdav"
+<% if ldap != 'yes' -%>
             AuthUserFile <%= documentroot %>/.htpasswd
+<% else -%>
+            AuthBasicProvider ldap
+            AuthLDAPURL <%= ldap_url %>
+            AuthLDAPBindDN <%= ldap_dn %>
+            AuthLDAPBindPassword <%= ldap_pass %>
+            AuthzLDAPAuthoritative off
+<% end -%>
+<% if allow_users == 'all' -%>
             Require valid-user
-    <%  end -%>
+<% else -%>
+            Require user <% allow_users.each do |user| %> <%= user %><% end %>
+<% end -%>
+<% end -%>
         </Location>
 <% end -%>
 
 </VirtualHost>
 <% end -%>
 
-<% if ssl == 'on' %>
+<% end -%>
+<% if ssl == 'on' -%>
 <VirtualHost <%= ip %>:<%= sslport %>>
 
         ServerAdmin <%= serveradmin %>
