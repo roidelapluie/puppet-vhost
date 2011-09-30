@@ -87,7 +87,6 @@ define vhost (
 			group => $apachegroup,
 			purge => true,
 			force => true,
-			recurse => true,
 			require => File["$vhosts::root"];
 	}
 
