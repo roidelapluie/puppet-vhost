@@ -3,7 +3,7 @@
 
         ServerAdmin <%= serveradmin %>
         ServerName <%= servername %> 
-        ServerAlias <% serveralias.each do |serveralias| %><%= serveralias %><% end %>
+        ServerAlias <% serveralias.each do |serveralias| %> <%= serveralias %><% end %>
 
 <% if proxy != 'yes' -%>
         DocumentRoot <%= documentroot %>
@@ -54,7 +54,6 @@
 <% end -%>
 
 </VirtualHost>
-<% end -%>
 
 <% end -%>
 <% if ssl == 'on' -%>
@@ -63,7 +62,7 @@ NameVirtualHost <%= ip %>:<%= sslport %>
 
         ServerAdmin <%= serveradmin %>
         ServerName <%= servername %> 
-        ServerAlias <% serveralias.each do |serveralias| %><%= serveralias %><% end %>
+        ServerAlias <% serveralias.each do |serveralias| %> <%= serveralias %><% end %>
 
 <% if proxy != 'yes' -%>
         DocumentRoot <%= documentroot %>
