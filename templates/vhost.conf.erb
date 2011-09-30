@@ -1,3 +1,4 @@
+<% if insecure == 'yes' -%>
 <VirtualHost <%= ip %>:<%= port %>>
 
         ServerAdmin <%= serveradmin %>
@@ -44,6 +45,7 @@
 <% end -%>
 
 </VirtualHost>
+<% end -%>
 
 <% if ssl == 'on' %>
 <VirtualHost <%= ip %>:<%= sslport %>>

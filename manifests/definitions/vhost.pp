@@ -37,7 +37,8 @@ define vhost (
 	$ldap_url = '',
 	$ldap_dn = '',
 	$ldap_pass = '',
-	$allow_users = 'all'
+	$allow_users = 'all',
+	$insecure = 'yes'
 ) {
 #	define default path for exec resources
 	Exec {
