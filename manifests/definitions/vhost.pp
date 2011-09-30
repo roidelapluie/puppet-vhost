@@ -95,16 +95,16 @@ define vhost (
 	file {
 		"/etc/httpd/conf.d/$servername.conf":
 			ensure => $ensure,
-			name => if $prior != '' {
-				$::operatingsystem ? {
+			name => $prior ? {
+				default => $::operatingsystem ? {
 					default => "/etc/httpd/conf.d/$prior-$servername.conf",
 					/debian|ubuntu/ => "/etc/apache2/sites-available/$prior-$servername.conf",
-				}
-			} else {
-				$::operatingsystem ? {
+				},
+
+				'' => $::operatingsystem ? {
 					default => "/etc/httpd/conf.d/$servername.conf",
 					/debian|ubuntu/ => "/etc/apache2/sites-available/$servername.conf",
-				}
+				},
 			},
 			mode    => 0644,
 #			notify => Service["httpd"],
