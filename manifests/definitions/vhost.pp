@@ -33,6 +33,7 @@ define vhost (
 	$proxypath = '/',
 	$proxytarget = nil,
 	$proxyrequests = 'off',
+	$proxypreservehost = 'off',
 	$ldap = 'no',
 	$ldap_url = '',
 	$ldap_dn = '',
