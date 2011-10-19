@@ -1,5 +1,6 @@
 define vhost::location (
 	$path,
+	$vhost,
 	$webdav = 'no',
 	$auth = 'no',
 	$exists = 'no',
@@ -18,7 +19,7 @@ define vhost::location (
 
 #	config file
 	file {
-		"/etc/httpd/conf.d/$servername.locations/$name.conf":
+		"/etc/httpd/conf.d/$vhost.locations/$name.conf":
 			ensure => present,
 			mode => 0644,
 #			notify => Service['httpd'],
