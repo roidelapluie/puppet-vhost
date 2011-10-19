@@ -74,3 +74,7 @@ NameVirtualHost <%= ip %>:<%= sslport %>
 
 </VirtualHost>
 <% end -%>
+
+<% if locations == 'yes' -%>
+	Include conf.d/$servername.locations/*.conf
+<% end -%>
