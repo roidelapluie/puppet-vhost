@@ -30,7 +30,8 @@ define vhost (
 	$proxytarget = nil,
 	$proxyrequests = 'off',
 	$insecure = 'yes',
-	$prior = ''
+	$prior = '',
+	$locations
 ) {
 #	define default path for exec resources
 	Exec {
@@ -80,6 +81,26 @@ define vhost (
 			purge => true,
 			force => true,
 			require => File["$vhosts::root"];
+	}
+
+#	ensure locations subdir is present if necessary
+	if $locations == 'yes' {
+		file {
+			"/etc/http/conf.d/$servername.locations":
+				ensure => $ensure,
+				name => $prior ? {
+					default => $::operatingsystem ? {
+						default => "/etc/httpd/conf.d/$prior-$servername.locations",
+						/debian|ubuntu/ => "/etc/apache2/sites-available/$prior-$servername.locations",
+					},
+
+					'' => $::operatingsystem ? {
+						default => "/etc/httpd/conf.d/$servername.locations",
+						/debian|ubuntu/ => "/etc/apache2/sites-available/$servername.locations",
+					},
+				},
+				mode => 0644;
+		}
 	}
 
 #	create config files
