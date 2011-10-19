@@ -1,5 +1,6 @@
 define vhost::location (
 	$location,
+	$webdav = 'no',
 	$auth = 'no',
 	$exists = 'no',
 	$user = 'webdav',
