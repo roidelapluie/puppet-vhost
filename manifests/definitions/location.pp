@@ -48,7 +48,7 @@ define vhost::location (
 		}
 
 		exec {
-			"htpasswd_webdav_$servername":
+			"htpasswd_webdav_$name":
 				command => "htpasswd -mb $path/.htpasswd $user $pass", 
 				unless => "grep $pass $path/.htpasswd",
 				require => File["$path/.htpasswd"];
