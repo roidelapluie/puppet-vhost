@@ -1,4 +1,4 @@
-        <Location />
+        <Location /<%= name %>>
 <% if webdav == 'yes' -%>
             DAV On
 <% end -%>
@@ -6,7 +6,7 @@
             AuthType Basic
             AuthName "Webdav"
 <% if ldap != 'yes' -%>
-            AuthUserFile <%= documentroot %>/.htpasswd
+            AuthUserFile <%= path %>/.htpasswd
 <% else -%>
             AuthBasicProvider ldap
             AuthLDAPURL <%= ldap_url %>
