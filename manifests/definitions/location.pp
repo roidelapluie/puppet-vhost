@@ -22,7 +22,7 @@ define vhost::location (
 		"/etc/httpd/conf.d/$vhost.locations/$name.conf":
 			ensure => present,
 			mode => 0644,
-#			notify => Service['httpd'],
+			notify => Service["$apache::apache"],
 			content => template('vhosts/vhost.location.erb');
 	}
 
