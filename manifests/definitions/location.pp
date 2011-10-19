@@ -1,5 +1,5 @@
 define vhost::location (
-	$location,
+	$path,
 	$webdav = 'no',
 	$auth = 'no',
 	$exists = 'no',
@@ -18,7 +18,7 @@ define vhost::location (
 
 #	config file
 	file {
-		"/etc/httpd/conf.d/$servername.locations/$location.conf":
+		"/etc/httpd/conf.d/$servername.locations/$name.conf":
 			ensure => present,
 			mode => 0644,
 #			notify => Service['httpd'],
@@ -28,7 +28,7 @@ define vhost::location (
 #	docroot
 	if $exists == 'no' {
 		file {
-			"$location":
+			"$path":
 				ensure => 'directory',
 				owner => "$apache::user",
 				group => "$apache::group",
@@ -39,18 +39,18 @@ define vhost::location (
 #	auth stuff
 	if $auth == 'yes' {
 		file {
-			"$location/.htpasswd":
+			"$path/.htpasswd":
 				ensure => "present",
 				owner => "$apache::user",
 				group => "$apache::group",
-				require => File["$location"];
+				require => File["$path"];
 		}
 
 		exec {
 			"htpasswd_webdav_$servername":
-				command => "htpasswd -mb $location/.htpasswd $user $pass", 
-				unless => "grep $pass $location/.htpasswd",
-				require => File["$location/.htpasswd"];
+				command => "htpasswd -mb $path/.htpasswd $user $pass", 
+				unless => "grep $pass $path/.htpasswd",
+				require => File["$path/.htpasswd"];
 		}
 	}
 }
