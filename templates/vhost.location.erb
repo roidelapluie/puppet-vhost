@@ -1,0 +1,23 @@
+        <Location />
+<% if webdav == 'yes' -%>
+            DAV On
+<% end -%>
+<% if webdav_auth == 'yes' -%>
+            AuthType Basic
+            AuthName "Webdav"
+<% if ldap != 'yes' -%>
+            AuthUserFile <%= documentroot %>/.htpasswd
+<% else -%>
+            AuthBasicProvider ldap
+            AuthLDAPURL <%= ldap_url %>
+            AuthLDAPBindDN <%= ldap_dn %>
+            AuthLDAPBindPassword <%= ldap_pass %>
+            AuthzLDAPAuthoritative off
+<% end -%>
+<% if allow_users == 'all' -%>
+            Require valid-user
+<% else -%>
+            Require user <% allow_users.each do |user| %> <%= user %><% end %>
+<% end -%>
+<% end -%>
+        </Location>
