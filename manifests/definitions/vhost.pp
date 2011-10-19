@@ -14,12 +14,12 @@ define vhost (
 	$apacheuser = $::operatingsystem ? {
 		default => 'apache',
 		archlinux => 'http',
-		/debian|ubuntu/ => 'root',
+		debian => 'root',
 	},
 	$apachegroup = $::operatingsystem ? {
 		default => 'apache',
 		archlinux => 'http',
-		/debian|ubuntu/ => 'root',
+		debian => 'root',
 	},
 	$ssl = 'off',
 	$sslport = '443',
