@@ -29,30 +29,6 @@
         ErrorLog <%= baselogdir %>/<%= servername %>/error.log
         ServerSignature On
 
-<% if webdav == 'yes' -%>
-        <Location />
-            DAV On
-<% if webdav_auth == 'yes' -%>
-            AuthType Basic
-            AuthName "Webdav"
-<% if ldap != 'yes' -%>
-            AuthUserFile <%= documentroot %>/.htpasswd
-<% else -%>
-            AuthBasicProvider ldap
-            AuthLDAPURL <%= ldap_url %>
-            AuthLDAPBindDN <%= ldap_dn %>
-            AuthLDAPBindPassword <%= ldap_pass %>
-            AuthzLDAPAuthoritative off
-<% end -%>
-<% if allow_users == 'all' -%>
-            Require valid-user
-<% else -%>
-            Require user <% allow_users.each do |user| %> <%= user %><% end %>
-<% end -%>
-<% end -%>
-        </Location>
-<% end -%>
-
 </VirtualHost>
 
 <% end -%>
@@ -87,30 +63,6 @@ NameVirtualHost <%= ip %>:<%= sslport %>
         CustomLog <%= baselogdir %>/<%= servername %>/access.log combined
         ErrorLog <%= baselogdir %>/<%= servername %>/error.log
         ServerSignature On
-
-<% if webdav == 'yes' -%>
-        <Location />
-            DAV On
-<% if webdav_auth == 'yes' -%>
-            AuthType Basic
-            AuthName "Webdav"
-<% if ldap != 'yes' -%>
-            AuthUserFile <%= documentroot %>/.htpasswd
-<% else -%>
-            AuthBasicProvider ldap
-            AuthLDAPURL <%= ldap_url %>
-            AuthLDAPBindDN <%= ldap_dn %>
-            AuthLDAPBindPassword <%= ldap_pass %>
-            AuthzLDAPAuthoritative off
-<% end -%>
-<% if allow_users == 'all' -%>
-            Require valid-user
-<% else -%>
-            Require user <% allow_users.each do |user| %> <%= user %><% end %>
-<% end -%>
-<% end -%>
-        </Location>
-<% end -%>
 
         SSLEngine On
         SSLCertificateFile <%= ssl_certfile %>
