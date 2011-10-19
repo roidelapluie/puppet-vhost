@@ -21,10 +21,6 @@ define vhost (
 		archlinux => 'http',
 		/debian|ubuntu/ => 'root',
 	},
-	$webdav = '',
-	$webdav_auth = 'yes',
-	$webdav_user = 'webdav',
-	$webdav_pass = 'webdav',
 	$ssl = 'off',
 	$sslport = '443',
 	$ssl_certfile = '/etc/pki/tls/certs/ca.crt',
@@ -115,23 +111,6 @@ define vhost (
 				present => 'link',
 				absent => 'absent',
 			};
-		}
-	}
-
-#	webdav stuff
-	if $webdav {
-		file {
-			"$documentroot/.htpasswd":
-				ensure => "$ensure",
-				owner => "$apacheuser",
-				group => "$apachegroup";
-		}
-
-		exec {
-			"htpasswd_$servername":
-				command => "htpasswd -mb $documentroot/.htpasswd $webdav_user $webdav_pass", 
-				unless => "grep $webdav_pass $documentroot/.htpasswd",
-				require => File["$documentroot/.htpasswd"];
 		}
 	}
 
