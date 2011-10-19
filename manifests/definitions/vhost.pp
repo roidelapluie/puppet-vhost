@@ -87,7 +87,10 @@ define vhost (
 	if $locations == 'yes' {
 		file {
 			"/etc/http/conf.d/$servername.locations":
-				ensure => $ensure,
+				ensure => $ensure ? {
+					present => 'directory',
+					absent =>  'absent',
+				},
 				name => $prior ? {
 					default => $::operatingsystem ? {
 						default => "/etc/httpd/conf.d/$prior-$servername.locations",
