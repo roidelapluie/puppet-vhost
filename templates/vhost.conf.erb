@@ -33,7 +33,7 @@
 
 <% end -%>
 <% if ssl == 'on' -%>
-<VirtualHost <%= servername %>:<%= sslport %>>
+<VirtualHost <%= ip %>:<%= sslport %>>
 
         ServerAdmin <%= serveradmin %>
         ServerName <%= servername %> 
