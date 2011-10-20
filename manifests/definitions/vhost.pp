@@ -9,7 +9,7 @@ define vhost (
 	$serveralias,
 	$baselogdir = $::operatingsystem ? {
 		default => '/var/log/httpd',
-		/debian|ubuntu/ => '/var/log/apache2',
+		debian => '/var/log/apache2',
 	},
 	$apacheuser = $::operatingsystem ? {
 		default => 'apache',
