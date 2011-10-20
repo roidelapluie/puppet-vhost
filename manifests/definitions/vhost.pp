@@ -164,8 +164,8 @@ define vhost (
 				command => "openssl req -new -key $ssl_keyfile -out ca.csr<cert_answers_$name",
 #				cwd => "`dirname $ssl_certfile`",
 				cwd => $::operatingsystem ? {
-					'/etc/pki/tls/private',
-					'/etc/ssl/private',
+					default => '/etc/pki/tls/private',
+					debian => '/etc/ssl/private',
 				},
 				unless => "test -f `dirname $ssl_certfile`/ca.csr",
 				require => [ Exec["gen_ssl_cert_$name"], File["cert_answers_$name"]  ];
@@ -173,8 +173,8 @@ define vhost (
 			"sign_cert_$name":
 				command => "openssl x509 -req -days 3650 -in ca.csr -signkey $ssl_keyfile -out $ssl_certfile",
 				cwd => $::operatingsystem ? {
-					'/etc/pki/tls/private',
-					'/etc/ssl/private',
+					default => '/etc/pki/tls/private',
+					debian => '/etc/ssl/private',
 				},
 				unless => "test -f $ssl_certfile",
 				require => Exec["create_cert_request_$name"];
