@@ -100,12 +100,12 @@ define vhost (
 				name => $prior ? {
 					default => $::operatingsystem ? {
 						default => "/etc/httpd/conf.d/$prior-$servername.locations",
-						/debian|ubuntu/ => "/etc/apache2/sites-available/$prior-$servername.locations",
+						debian => "/etc/apache2/sites-available/$prior-$servername.locations",
 					},
 
 					'' => $::operatingsystem ? {
 						default => "/etc/httpd/conf.d/$servername.locations",
-						/debian|ubuntu/ => "/etc/apache2/sites-available/$servername.locations",
+						debian => "/etc/apache2/sites-available/$servername.locations",
 					},
 				},
 				mode => 0644;
@@ -119,12 +119,12 @@ define vhost (
 			name => $prior ? {
 				default => $::operatingsystem ? {
 					default => "/etc/httpd/conf.d/$prior-$servername.conf",
-					/debian|ubuntu/ => "/etc/apache2/sites-available/$prior-$servername.conf",
+					debian => "/etc/apache2/sites-available/$prior-$servername.conf",
 				},
 
 				'' => $::operatingsystem ? {
 					default => "/etc/httpd/conf.d/$servername.conf",
-					/debian|ubuntu/ => "/etc/apache2/sites-available/$servername.conf",
+					debian => "/etc/apache2/sites-available/$servername.conf",
 				},
 			},
 			mode    => 0644,
