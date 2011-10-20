@@ -23,8 +23,14 @@ define vhost (
 	},
 	$ssl = 'off',
 	$sslport = '443',
-	$ssl_certfile = '/etc/pki/tls/certs/ca.crt',
-	$ssl_keyfile = '/etc/pki/tls/private/ca.key',
+	$ssl_certfile = $::operatingsystem ? {
+		default => '/etc/pki/tls/certs/ca.crt',
+		debian => '/etc/ssl/certs/ca.crt',
+	},
+	$ssl_keyfile = $::operatingsystem ? {
+		default => '/etc/pki/tls/private/ca.key',
+		debian => '/etc/ssl/private/ca.key',
+	},
 	$proxy = 'no',
 	$proxypath = '/',
 	$proxytarget = nil,
@@ -142,7 +148,10 @@ define vhost (
 	if $ssl {
 		file {
 			"cert_answers_$name":
-				path => "/etc/pki/tls/private/cert_answers_$name",
+				path => $::operatingsystem ?{
+					default => "/etc/pki/tls/private/cert_answers_$name",
+					debian => "/etc/ssl/private/cert_answers_$name",
+				},
 				content => template('vhosts/cert_answers.erb');
 		}
 
@@ -154,13 +163,19 @@ define vhost (
 			"create_cert_request_$name":
 				command => "openssl req -new -key $ssl_keyfile -out ca.csr<cert_answers_$name",
 #				cwd => "`dirname $ssl_certfile`",
-				cwd => '/etc/pki/tls/private',
+				cwd => $::operatingsystem ? {
+					'/etc/pki/tls/private',
+					'/etc/ssl/private',
+				},
 				unless => "test -f `dirname $ssl_certfile`/ca.csr",
 				require => [ Exec["gen_ssl_cert_$name"], File["cert_answers_$name"]  ];
 
 			"sign_cert_$name":
 				command => "openssl x509 -req -days 3650 -in ca.csr -signkey $ssl_keyfile -out $ssl_certfile",
-				cwd => '/etc/pki/tls/private',
+				cwd => $::operatingsystem ? {
+					'/etc/pki/tls/private',
+					'/etc/ssl/private',
+				},
 				unless => "test -f $ssl_certfile",
 				require => Exec["create_cert_request_$name"];
 		}
