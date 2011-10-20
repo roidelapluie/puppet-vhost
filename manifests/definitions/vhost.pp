@@ -31,7 +31,7 @@ define vhost (
 	$proxyrequests = 'off',
 	$insecure = 'yes',
 	$prior = '',
-	$locations
+	$locations = 'no'
 ) {
 #	define default path for exec resources
 	Exec {
