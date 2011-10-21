@@ -16,7 +16,6 @@
 
         </Directory>
 <% else -%>
-        ProxyPreserveHost <%= proxypreservehost %>
         ProxyRequests <%= proxyrequests %>
         ProxyPass <%= proxypath %> http://<%= proxytarget %>/
         ProxyPassReverse <%= proxypath %> http://<%= proxytarget %>/
