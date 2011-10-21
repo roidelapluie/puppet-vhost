@@ -35,6 +35,7 @@ define vhost (
 	$proxypath = '/',
 	$proxytarget = nil,
 	$proxyrequests = 'off',
+	$proxypreservehost = 'off',
 	$insecure = 'yes',
 	$prior = '',
 	$locations = 'no'
