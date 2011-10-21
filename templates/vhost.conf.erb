@@ -78,3 +78,19 @@
 <% if locations == 'yes' -%>
 	Include conf.d/<%= servername %>.locations/*.conf
 <% end -%>
+
+<% if proxy != 'yes' -%>
+  <% if insecure == 'yes' -%>
+<Proxy http://<%= proxytarget %>/*>
+  Order deny,allow
+  Allow from all
+</Proxy>
+  <% end -%>
+  <% if ssl == 'on' -%>
+<Proxy https://<%= proxytarget %>/*>
+  Order deny,allow
+  Allow from all
+</Proxy>
+  <% end -%>
+<% end -%>
+
