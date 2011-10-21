@@ -9,37 +9,35 @@ define vhost (
 	$serveralias,
 	$baselogdir = $::operatingsystem ? {
 		default => '/var/log/httpd',
-		/debian|ubuntu/ => '/var/log/apache2',
+		debian => '/var/log/apache2',
 	},
 	$apacheuser = $::operatingsystem ? {
 		default => 'apache',
 		archlinux => 'http',
-		/debian|ubuntu/ => 'root',
+		debian => 'root',
 	},
 	$apachegroup = $::operatingsystem ? {
 		default => 'apache',
 		archlinux => 'http',
-		/debian|ubuntu/ => 'root',
+		debian => 'root',
 	},
-	$webdav = '',
-	$webdav_auth = 'yes',
-	$webdav_user = 'webdav',
-	$webdav_pass = 'webdav',
 	$ssl = 'off',
 	$sslport = '443',
-	$ssl_certfile = '/etc/pki/tls/certs/ca.crt',
-	$ssl_keyfile = '/etc/pki/tls/private/ca.key',
+	$ssl_certfile = $::operatingsystem ? {
+		default => '/etc/pki/tls/certs/ca.crt',
+		debian => '/etc/ssl/certs/ca.crt',
+	},
+	$ssl_keyfile = $::operatingsystem ? {
+		default => '/etc/pki/tls/private/ca.key',
+		debian => '/etc/ssl/private/ca.key',
+	},
 	$proxy = 'no',
 	$proxypath = '/',
 	$proxytarget = nil,
 	$proxyrequests = 'off',
-	$ldap = 'no',
-	$ldap_url = '',
-	$ldap_dn = '',
-	$ldap_pass = '',
-	$allow_users = 'all',
 	$insecure = 'yes',
-	$prior = ''
+	$prior = '',
+	$locations = 'no'
 ) {
 #	define default path for exec resources
 	Exec {
@@ -91,6 +89,29 @@ define vhost (
 			require => File["$vhosts::root"];
 	}
 
+#	ensure locations subdir is present if necessary
+	if $locations == 'yes' {
+		file {
+			"/etc/http/conf.d/$servername.locations":
+				ensure => $ensure ? {
+					present => 'directory',
+					absent =>  'absent',
+				},
+				name => $prior ? {
+					default => $::operatingsystem ? {
+						default => "/etc/httpd/conf.d/$prior-$servername.locations",
+						debian => "/etc/apache2/sites-available/$prior-$servername.locations",
+					},
+
+					'' => $::operatingsystem ? {
+						default => "/etc/httpd/conf.d/$servername.locations",
+						debian => "/etc/apache2/sites-available/$servername.locations",
+					},
+				},
+				mode => 0644;
+		}
+	}
+
 #	create config files
 	file {
 		"/etc/httpd/conf.d/$servername.conf":
@@ -98,12 +119,12 @@ define vhost (
 			name => $prior ? {
 				default => $::operatingsystem ? {
 					default => "/etc/httpd/conf.d/$prior-$servername.conf",
-					/debian|ubuntu/ => "/etc/apache2/sites-available/$prior-$servername.conf",
+					debian => "/etc/apache2/sites-available/$prior-$servername.conf",
 				},
 
 				'' => $::operatingsystem ? {
 					default => "/etc/httpd/conf.d/$servername.conf",
-					/debian|ubuntu/ => "/etc/apache2/sites-available/$servername.conf",
+					debian => "/etc/apache2/sites-available/$servername.conf",
 				},
 			},
 			mode    => 0644,
@@ -123,28 +144,14 @@ define vhost (
 		}
 	}
 
-#	webdav stuff
-	if $webdav {
-		file {
-			"$documentroot/.htpasswd":
-				ensure => "$ensure",
-				owner => "$apacheuser",
-				group => "$apachegroup";
-		}
-
-		exec {
-			"htpasswd_$servername":
-				command => "htpasswd -mb $documentroot/.htpasswd $webdav_user $webdav_pass", 
-				unless => "grep $webdav_pass $documentroot/.htpasswd",
-				require => File["$documentroot/.htpasswd"];
-		}
-	}
-
 #	ssl stuff
 	if $ssl {
 		file {
 			"cert_answers_$name":
-				path => "/etc/pki/tls/private/cert_answers_$name",
+				path => $::operatingsystem ?{
+					default => "/etc/pki/tls/private/cert_answers_$name",
+					debian => "/etc/ssl/private/cert_answers_$name",
+				},
 				content => template('vhosts/cert_answers.erb');
 		}
 
@@ -156,13 +163,19 @@ define vhost (
 			"create_cert_request_$name":
 				command => "openssl req -new -key $ssl_keyfile -out ca.csr<cert_answers_$name",
 #				cwd => "`dirname $ssl_certfile`",
-				cwd => '/etc/pki/tls/private',
+				cwd => $::operatingsystem ? {
+					default => '/etc/pki/tls/private',
+					debian => '/etc/ssl/private',
+				},
 				unless => "test -f `dirname $ssl_certfile`/ca.csr",
 				require => [ Exec["gen_ssl_cert_$name"], File["cert_answers_$name"]  ];
 
 			"sign_cert_$name":
 				command => "openssl x509 -req -days 3650 -in ca.csr -signkey $ssl_keyfile -out $ssl_certfile",
-				cwd => '/etc/pki/tls/private',
+				cwd => $::operatingsystem ? {
+					default => '/etc/pki/tls/private',
+					debian => '/etc/ssl/private',
+				},
 				unless => "test -f $ssl_certfile",
 				require => Exec["create_cert_request_$name"];
 		}
